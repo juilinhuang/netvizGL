@@ -8,15 +8,9 @@
 #include "Graph.h"
 
 class AdjacencyGraph : public Graph {
- public:
-  AdjacencyGraph(char *filePath);
-  virtual void draw();
-  virtual void update();
- private:
- public:
-  virtual ~AdjacencyGraph();
- private:
-  virtual void read(char *filePath);
+public:
+    AdjacencyGraph(char *filePath);
+    virtual ~AdjacencyGraph();
 };
 
 #endif //NETVIZGL_ADJACENCYGRAPH_H

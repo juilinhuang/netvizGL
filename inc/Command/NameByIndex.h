@@ -16,7 +16,7 @@ class NameByIndex : public Command {
   void execute() override {
     static bool toggle = false;
     char *digit = new char[64];    for (int j = 0; j < window->graph->numVertices; ++j) {
-      sprintf(digit, "%d", j);
+//      sprintf(digit, "%d", j);
       if (!toggle)
         window->graph->vertices[j]->setText(digit);
       else {

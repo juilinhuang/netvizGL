@@ -6,90 +6,56 @@
 #define NETVIZGL_LOADGRAPHCOMMAND_H
 
 #include "Command.h"
-#include "../GLWindow.h"
+#include "glwindow.h"
 #include "../Graphs/EdgeGraph.h"
 #include "../Graphs/MatrixMarketGraph.h"
 #include "../Graphs/AdjacencyGraph.h"
-#include "../Algorithms/FruchtermanReingold.h"
-#include "../Algorithms/MultiLevel.h"
-#include "../Algorithms/MultiForce.h"
-#include "../Algorithms/SFDAdapter.h"
 #include <fstream>
 
 class LoadGraph : public Command {
- private:
-  GLWindow *window;
- public:
-  LoadGraph(GLWindow *window) : window(window) {};
+private:
+    GLWindow *window;
 
- public:
-  void execute() override {
-    std::ifstream infile;
-    infile.open(window->graphFilePath);
-    std::string sLine;
-    getline(infile, sLine);
-    infile.close();
-
-    if (window->graph) {
-      window->graph->numVertices = 0;
-    }
-    Graph *temp = window->graph;
-
-    if (sLine.length() <= 4) {
-      window->graph = new EdgeGraph((window->graphFilePath));
-      fprintf(stdout, "Loading EdgeList:%s\n", window->graphFilePath);
-
-    } else if (strcmp("%%MatrixMarket", sLine.substr(0, 14).c_str()) == 0) /*%%MatrixMarket 14 chars*/{
-      window->graph = new MatrixMarketGraph((window->graphFilePath));
-
-      fprintf(stdout, "Loading MatrixMarketGraph:%s\n", window->graphFilePath);
-
-    } else if (sLine.length() > 3 && (strcmp("0", sLine.substr(0, 1).c_str()) == 0)
-        || strcmp("1", sLine.substr(0, 1).c_str()) == 0) {
-      window->graph = new AdjacencyGraph((window->graphFilePath));
-      fprintf(stdout, "Loading AdjacencyGraph:%s\n", window->graphFilePath);
-
-    } else {
-      fprintf(stderr, "Error file type not supported?");
-      return;
+public:
+    LoadGraph(GLWindow *window) : window(window) {
+//        fprintf(stdout, "%s\n", window->getPath());
     }
 
-    if (window->algorithmThread) {
-      window->endThread = true;
-      window->algorithmThread->join();
-      delete window->algorithmThread;
+    ~LoadGraph(){
+        delete window;
     }
 
-    switch (window->buttonWidget->getAlgorithm()) {
-      case Widget::FR :window->algorithm = new FruchtermanReingold(window->graph);
-        break;
-      case Widget::SMPL: window->algorithm = new SFDAdapter(window->graph);
-        break;
-      case Widget::MLT: window->algorithm = new MultiForce(window->graph);
-        break;
-      default: break;
-    }
-    window->endThread = false;
-    window->algorithmThread = new thread(GLWindow::algorithmFunction);
+    void execute() override {
+        std::ifstream infile;
+        infile.open(window->getPath());
+        std::string sLine;
+        getline(infile, sLine);
+        infile.close();
 
-    char *digit = new char[64];
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    srand(Graph::hash3(time.tv_sec, time.tv_usec, getpid()));
-    for (int j = 0; j < window->graph->numVertices; ++j) {
-      sprintf(digit, "%d", j);
-      //GLWindow::Ins()->graph->vertices[j]->setText(digit);
-      window->graph->vertices[j]->setColour(((double) rand() / (RAND_MAX)),
-                                                          ((double) rand() / (RAND_MAX)),
-                                                          ((double) rand() / (RAND_MAX)));
-    }
-    delete (digit);
+        if (window->getGraph()) {
+            window->getGraph()->numVertices = 0;
+        }
+        Graph *temp = window->getGraph();
 
-    if (temp) {
-      delete (temp);
-    }
+        if (sLine.length() <= 4) {
+            window->setGraph(new EdgeGraph(window->getPath()));
+//            fprintf(stdout, "Loading EdgeList:%s\n", window->getPath());
+        } else if (strcmp("%%MatrixMarket", sLine.substr(0, 14).c_str()) == 0) /*%%MatrixMarket 14 chars*/{
+            window->setGraph(new MatrixMarketGraph(window->getPath()));
+//            fprintf(stdout, "Loading MatrixMarketGraph:%s\n", window->getPath());
+        } else if (sLine.length() > 3 && (strcmp("0", sLine.substr(0, 1).c_str()) == 0)
+                   || strcmp("1", sLine.substr(0, 1).c_str()) == 0) {
+            window->setGraph(new AdjacencyGraph(window->getPath()));
+//            fprintf(stdout, "Loading AdjacencyGraph:%s\n", window->getPath());
+        } else {
+//            fprintf(stderr, "Error file type not supported?");
+            return;
+        }
 
-  }
+        if (temp) {
+            delete (temp);
+        }
+    }
 };
 
 #endif //NETVIZGL_LOADGRAPHCOMMAND_H

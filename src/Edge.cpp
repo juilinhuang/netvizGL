@@ -2,105 +2,101 @@
 // Created by werl on 29/09/16.
 //
 
-#include "../inc/Edge.h"
-#include "../inc/Vertex.h"
+#include "inc/Edge.h"
+
 
 const double Edge::scale = Vertex::radius * 10;
 
-Edge::Edge(GLdouble X1, GLdouble Y1, GLdouble Z1, GLdouble X2, GLdouble Y2, GLdouble Z2) {
+Edge::Edge(Vertex *base, Vertex *connect) : base(base), connect(connect){
+    vertices = new GLdouble[6];
 
-  posX1 = X1;
-  posY1 = Y1;
-  posZ1 = Z1;
-  posX2 = X2;
-  posY2 = Y2;
-  posZ2 = Z2;
+    update();
 
-  colours = new GLfloat[6];
-  for (int i = 0; i < 6; ++i) {
-    colours[i] = 0;
-  }
-  vertices = new GLdouble[6];
-  vertices[0] = X1 * scale;
-  vertices[1] = Y1 * scale;
-  vertices[2] = Z1 * scale;
-  vertices[3] = X2 * scale;
-  vertices[4] = Y2 * scale;
-  vertices[5] = Z2 * scale;
-
-  text = new char[64];
-  strcpy(text, "");
-  font = new FTGLPixmapFont("../Fonts/arial.ttf");
-  if (font->Error())
-    fprintf(stderr, "Err");
-  font->FaceSize(12);
-}
-
-void Edge::update() {
-  vertices[0] = posX1 * scale;
-  vertices[1] = posY1 * scale;
-  vertices[2] = posZ1 * scale;
-  vertices[3] = posX2 * scale;
-  vertices[4] = posY2 * scale;
-  vertices[5] = posZ2 * scale;
+    colours = new GLfloat[6];
+    for (int i = 0; i < 6; ++i) {
+        colours[i] = 0;
+    }
+    text = new char[64];
+    strcpy(text, "");
+    //  font = new FTGLPixmapFont("../Fonts/arial.ttf");
+    //  if (font->Error())
+    //    fprintf(stderr, "Err");
+    //  font->FaceSize(12);
 }
 
 Edge::~Edge() {
-  delete vertices;
+    delete vertices;
+}
+
+void Edge::update() {
+    posX1 = base->posX;
+    posY1 = base->posY;
+    posZ1 = base->posZ;
+    posX2 = connect->posX;
+    posY2 = connect->posY;
+    posZ2 = connect->posZ;
+
+    vertices[0] = posX1 * scale * 0.1;  //scale = 0.1
+    vertices[1] = posY1 * scale * 0.1;
+    vertices[2] = posZ1 * scale * 0.1;
+    vertices[3] = posX2 * scale * 0.1;
+    vertices[4] = posY2 * scale * 0.1;
+    vertices[5] = posZ2 * scale * 0.1;
 }
 
 void Edge::draw() {
-  if (posZ1 > -1000 && posZ2 > -1000) {
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glColorPointer(3, GL_FLOAT, 0, colours);
+    if (posZ1 > -1000 && posZ2 > -1000) {
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnable(GL_LINE_SMOOTH);
 
-    glVertexPointer(3, GL_DOUBLE, 0, this->vertices);
+        glColorPointer(3, GL_FLOAT, 0, colours);
+        glVertexPointer(3, GL_DOUBLE, 0, this->vertices);
+        glDrawArrays(GL_LINES, 0, 2);
 
-    glDrawArrays(GL_LINES, 0, 2);
-
-    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-    glDisableClientState(GL_COLOR_ARRAY);
-  }
+        glDisable(GL_LINE_SMOOTH);
+        glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+        glDisableClientState(GL_COLOR_ARRAY);
+    }
 }
 
 void Edge::drawText() {
-  if (strlen(text) < 1)
-    return;
+    if (strlen(text) < 1)
+        return;
 
-  glPixelTransferf(GL_RED_BIAS, -1.0f);
-  glPixelTransferf(GL_GREEN_BIAS, -1.0f);
-  glPixelTransferf(GL_BLUE_BIAS, -1.0f);
+    glPixelTransferf(GL_RED_BIAS, -1.0f);
+    glPixelTransferf(GL_GREEN_BIAS, -1.0f);
+    glPixelTransferf(GL_BLUE_BIAS, -1.0f);
 
-  GLdouble *basePos = new GLdouble[3];
-  GLdouble *connectPos = new GLdouble[3];
-  base->getScreenPosition(basePos);
-  connect->getScreenPosition(connectPos);
+    GLdouble *basePos = new GLdouble[3];
+    GLdouble *connectPos = new GLdouble[3];
+    base->getScreenPosition(basePos);
+    connect->getScreenPosition(connectPos);
 
-  double midX = basePos[0] + connectPos[0];
-  midX = midX / 2;
+//    double midX = basePos[0] + connectPos[0];
+//    midX = midX / 2;
 
-  double midY = basePos[1] + connectPos[1];
-  midY = midY / 2;
+//    double midY = basePos[1] + connectPos[1];
+//    midY = midY / 2;
 
-  double midZ = basePos[2] + connectPos[2];
-  midZ = midZ / 2;
+//    double midZ = basePos[2] + connectPos[2];
+//    midZ = midZ / 2;
 
-  font->Render(text, -1, FTPoint(midX + 5, midY + 5, midZ));
+    //  font->Render(text, -1, FTPoint(midX + 5, midY + 5, midZ));
 
-  delete basePos;
-  delete connectPos;
+    delete basePos;
+    delete connectPos;
 }
 
 void Edge::setColour(GLfloat r, GLfloat g, GLfloat b, GLfloat r2, GLfloat g2, GLfloat b2) {
-  colours[0] = r;
-  colours[1] = g;
-  colours[2] = b;
-  colours[3] = r2;
-  colours[4] = g2;
-  colours[5] = b2;
+    colours[0] = r;
+    colours[1] = g;
+    colours[2] = b;
+    colours[3] = r2;
+    colours[4] = g2;
+    colours[5] = b2;
 }
 
 void Edge::setText(const char *t) {
-  strcpy(text, t);
+    strcpy(text, t);
 }

@@ -6,35 +6,54 @@
 #include <string.h>
 #include <cstdio>
 #include <vector>
+#include <set>
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <iterator>
+#include <iostream>
+#include <sys/time.h>
 #include "../Vertex.h"
+#include "../Edge.h"
 
 #ifndef NETVIZGL_GRAPH_H
 #define NETVIZGL_GRAPH_H
 
-class Algorithm;
-
 using namespace std;
 
 class Graph {
- public:
-  Graph(char *filePath);
-  virtual ~Graph();
-  Algorithm *algorithm;
+public:
+    Graph();
+    virtual ~Graph();
 
-  vector<Vertex *> vertices;
-  unsigned long numVertices;
-  unsigned long numEdges;
-  vector<vector<int>> adjacencyMatrix;
-  vector<int *> edgeList;
+    unsigned long numVertices;
+    unsigned long numEdges;
 
-  virtual void draw() = 0;
-  virtual void update() = 0;
+    vector<Vertex *> vertices;
+    vector<Edge *> edges;
+    vector<vector<int>> adjacencyMatrix;
+    vector<int *> rawDataFromFile;
+    vector<int *> edgeList;
+    set<int> set;
 
-  virtual int *split(string x);
-  static unsigned int hash3(unsigned int h1, unsigned int h2, unsigned int h3);
- private:
-  virtual void read(char *filePath) = 0;
+    void update();
+    void draw();
+    static unsigned int hash3(unsigned int h1, unsigned int h2, unsigned int h3);
+
+    vector<vector<int> > getAdjacencyMatrix() const;
+
+protected:
+    void createGraphData();
+    void createVertices();
+    void createEdges();
+    void initialiseAdjacencyMatrix();
+    void getEdgeListFromAdjacencyMatrix();
+    void getAdjacencyMatrixFromEdgeList();
+    void setRandomColour();
+
+//private:
+    void read(char *filePath);
+    int *split(string str);
 };
 
 #endif //NETVIZGL_GRAPHREADER_H

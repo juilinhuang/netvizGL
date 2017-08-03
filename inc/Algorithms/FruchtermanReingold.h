@@ -10,15 +10,15 @@
 #include <zconf.h>
 
 class FruchtermanReingold : public Algorithm {
- public:
-  FruchtermanReingold(Graph *g);
-  void apply() override;
-  void initialPlacement() override;
-  double area;
-  double k;
-  double W;
-  double L;
-  double t;
+public:
+    FruchtermanReingold(Graph *g);
+    void apply() override;
+    void initialPlacement() override;
+    double area;
+    double k;
+    double W;
+    double L;
+    double t;
 };
 
 #endif //NETVIZGL_FRUCHTERMANREINGOLD_H

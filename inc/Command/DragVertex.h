@@ -8,7 +8,8 @@
 #include <algorithm>
 #include <iostream>
 #include "Command.h"
-#include "../GLWindow.h"
+#include "glwindow.h"
+
 class DragVertex : public Command {
  private:
   GLWindow *window;
@@ -16,9 +17,9 @@ class DragVertex : public Command {
   DragVertex(GLWindow *window) : window(window) {}
 
   void execute() override {
-    if (window->selectedNode) {
-      window->selectedNode->posX -= window->mouseDiffX * .2 * window->translateZ;
-      window->selectedNode->posY += window->mouseDiffY * .2 * window->translateZ;
+    if (window->getSelectedNode()) {
+      window->getSelectedNode()->posX -= window->getMouseDiffX() * .145 * window->getTranslateZ();
+      window->getSelectedNode()->posY += window->getMouseDiffY() * .145 * window->getTranslateZ();
     }
   }
 };

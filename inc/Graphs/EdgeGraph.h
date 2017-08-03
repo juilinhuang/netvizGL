@@ -6,21 +6,13 @@
 #define NETVIZGL_EDGEGRAPH_H
 
 #include "Graph.h"
+#include <QtCore>
+
 class EdgeGraph : public Graph {
- public:
-  EdgeGraph(char *filePath);
-  EdgeGraph(char *filePath, vector<int *> newEdgeList);
-  EdgeGraph(vector<int *> newEdgeList);
-
-
-  virtual void draw();
-  virtual void update();
- private:
- public:
-  virtual ~EdgeGraph();
- private:
-  virtual void read(char *filePath);
-  bool validate(char *filePath);
+public:
+    EdgeGraph(char *filePath);
+    EdgeGraph(vector<int *> newEdgeList);
+    virtual ~EdgeGraph();
 };
 
 #endif //NETVIZGL_EDGEGRAPH_H

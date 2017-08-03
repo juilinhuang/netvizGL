@@ -4,14 +4,18 @@
 
 #ifndef NETVIZGL_SIMPLEFORCEDIRECTED_H
 #define NETVIZGL_SIMPLEFORCEDIRECTED_H
+
 #include "../Graphs/Graph.h"
-class SimpleForceDirected {
- private:
-  Graph *graph;
- public:
-  SimpleForceDirected(Graph *g);
-  void calculate();
-  void place();
+#include "Algorithm.h"
+
+class SimpleForceDirected : public Algorithm {
+//private:
+//    Graph *graph;
+public:
+    SimpleForceDirected(Graph *g);
+
+    void apply() override;
+    void initialPlacement() override;
 };
 
 #endif //NETVIZGL_SIMPLEFORCEDIRECTED_H
